@@ -1,5 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
+import csv
+import os 
+import sys
 
 HEADERS = ["product_page_url",
 		   "universal_ product_code (upc)",
@@ -110,3 +113,24 @@ def writeCSV(headers, values, path, name_file):
 		writer = csv.writer(f)
 		writer.writerow(headers)
 		writer.writerows(values)
+
+path_csv = sys.argv[1] if len(sys.argv) > 1 else '.'
+path_img = sys.argv[2] if len(sys.argv) > 2 else '.'
+ncategory = 0
+nbooks = 0
+for url_category in getUrlsAllCategory():
+
+	name_category = url_category.split('/')[-2]
+	print(f'Chargement des livres de la catégorie {name_category}.')
+	try:
+
+		informations = getInformationsAllBooksInCategory(url_category)
+		ncategory += 1
+		nbooks += len(informations)
+		writeCSV(HEADERS, informations, path_csv, name_category)
+		downloadingImgBooks([inf[3] for inf in informations], path_img)
+
+	except ResponseError as e:
+		print(e)
+
+print(f'Total de catégorie récuperé {ncategory}.\nTotal de livres récupéré {nbooks}.')
