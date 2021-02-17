@@ -9,7 +9,7 @@ HEADERS = ["product_page_url",
 		   "product_description",
 		   "category",
 		   "review_rating","image_url"]
-		   
+
 MAXIMUM_RESULT_PER_PAGE = 20
 URL_BASE ='http://books.toscrape.com/'
 
@@ -92,3 +92,21 @@ def getUrlsAllCategory():
 		raise ResponseError(resp.status_code)
 
 	return [ URL_BASE+a['href'] for a in l_a ]
+
+def downloadingImgBooks(urls, path):
+
+	for url in urls:
+
+		with open(path+'/'+os.path.basename(url), 'wb') as f:
+
+			resp = requests.get(url)
+			if resp.ok:
+				f.write(resp.content)
+
+def writeCSV(headers, values, path, name_file):
+
+	with open(f'{path}/{name_file}.csv', 'w', newline='', encoding='utf-8') as f:
+
+		writer = csv.writer(f)
+		writer.writerow(headers)
+		writer.writerows(values)
