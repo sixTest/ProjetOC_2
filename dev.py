@@ -9,8 +9,16 @@ HEADERS = ["product_page_url",
 		   "product_description",
 		   "category",
 		   "review_rating","image_url"]
-
+		   
+MAXIMUM_RESULT_PER_PAGE = 20
 URL_BASE ='http://books.toscrape.com/'
+
+class ResponseError(Exception):
+	def __init__(self, resp_status):
+		self.resp_status = resp_status
+
+	def __str__(self):
+		return f"Une erreur est survenu lors de la requete 'get' code status : ({self.resp_status})"
 
 def getInformationsOneBook(resp):
 
@@ -56,3 +64,31 @@ def getUrlsBooksInCategory(url_category, npage):
 				urls.extend(getAllUrlsBooksOnePageCategory(resp))
 
 	return [url.replace('../../../', 'http://books.toscrape.com/catalogue/' ) for url in urls]
+
+def getInformationsAllBooksInCategory(url_category):
+
+	resp = requests.get(url_category)
+	if resp.ok:
+		npage = getNumberPageForCategory(resp)
+		urls = getUrlsBooksInCategory(url_category, npage)
+
+		informations = []
+		for url in urls:
+			resp = requests.get(url)
+			if resp.ok:
+				informations.append(getInformationsOneBook(resp))
+	else:
+		raise ResponseError(resp.status_code)
+
+	return informations
+
+def getUrlsAllCategory():
+
+	resp = requests.get(URL_BASE)
+	if resp.ok:
+		soup = BeautifulSoup(resp.text, 'html.parser')
+		l_a = soup.find('ul', attrs={'class': 'nav nav-list'}).ul.findAll('a')
+	else:
+		raise ResponseError(resp.status_code)
+
+	return [ URL_BASE+a['href'] for a in l_a ]
