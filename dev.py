@@ -29,3 +29,30 @@ def getInformationsOneBook(resp):
 	review_rating = product_information_dictionnaire['Number of reviews']
 
 	return title,description,category,image_url,universal_product_code,price_excluding_tax,price_including_tax,number_available,review_rating
+
+def getNumberPageForCategory(resp):
+	soup = BeautifulSoup(resp.text, 'html.parser')
+	npage = int(soup.find('form', attrs={'method': 'get', 'class': 'form-horizontal'}).strong.text)
+	return int(npage/MAXIMUM_RESULT_PER_PAGE) + 1
+
+def getAllUrlsBooksOnePageCategory(resp):
+	soup = BeautifulSoup(resp.text, 'html.parser')
+	l_li = soup.findAll('li', attrs={'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
+	return [li.a['href'] for li in l_li]
+
+def getUrlsBooksInCategory(url_category, npage):
+
+	urls = []
+	for i in range(1,npage+1):
+
+		if i == 1:
+			resp = requests.get(url_category)
+			if resp.ok:
+				urls.extend(getAllUrlsBooksOnePageCategory(resp))
+		else:
+			url_page = url_category.replace(os.path.basename(url_category), f'page-{i}.html')
+			resp = requests.get(url_page)
+			if resp.ok:
+				urls.extend(getAllUrlsBooksOnePageCategory(resp))
+
+	return [url.replace('../../../', 'http://books.toscrape.com/catalogue/' ) for url in urls]
