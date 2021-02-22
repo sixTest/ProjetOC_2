@@ -20,4 +20,4 @@ Un script permettant de récupérer les informations ci-dessous des livres du si
 * Tapez : python -m venv env
 * Tapez : env\Scripts\activate.bat
 * Tapez : pip install -r requirements.txt
-* Tapez : python dev.py < path pour les fichiers csv > < path pour les images >
+* Tapez : python dev.py
