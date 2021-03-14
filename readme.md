@@ -18,6 +18,8 @@ Un script permettant de récupérer les informations ci-dessous des livres du si
 * Ouvrez un invite de commande
 * Placez vous dans le dossier contenant le fichier dev.py
 * Tapez : python -m venv env
-* Tapez : env\Scripts\activate.bat
+* Tapez : 
+  * Pour Windows : env\Scripts\activate.bat
+  * Pour Linux   : env/bin/activate
 * Tapez : pip install -r requirements.txt
 * Tapez : python dev.py
